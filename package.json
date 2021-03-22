@@ -6,6 +6,9 @@
     "author": "",
     "private": true,
     "license": "",
+    "engines": {
+        "node": "14.x"
+    },
     "dependencies": {
       "express": "~4.17.1",
       "socket.io": "^4.0.0"
