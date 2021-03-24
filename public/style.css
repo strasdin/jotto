@@ -188,3 +188,7 @@ ul {
   padding-left: 10px;
   width: 60px;
 }
+
+#startButton{
+  display: none;
+}

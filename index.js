@@ -25,6 +25,8 @@ let p2Word = null;
 let p1 = null;
 let p2 = null;
 
+let players = [];
+
 io.on('connection', (socket) => {
     let addedUser = false;
 
@@ -53,12 +55,7 @@ io.on('connection', (socket) => {
             username: socket.username,
             numUsers: numUsers
         });
-        if(numUsers === 1){
-            p1 = socket.username;
-        }else if(numUsers === 2){
-            p2 = socket.username;
-            startGame();
-        }
+        players.push(socket.username);
     });
 
     // when the client emits 'typing', we broadcast it to others
@@ -85,6 +82,13 @@ io.on('connection', (socket) => {
                 username: socket.username,
                 numUsers: numUsers
             });
+            let newArr = [];
+            for(let i = 0; i < players.length; i++){
+                if(players[i] !== socket.username){
+                    newArr.push(socket.username);
+                }
+            }
+            players = newArr;
         }
     });
 
@@ -128,10 +132,31 @@ io.on('connection', (socket) => {
                     winWord: winWord,
                     loseWord: loseWord
                 });
+                clearGame();
             }
         }
         
     });
+
+    socket.on('jotto start', () => {
+        p1 = players[0];
+        p2 = players[1];
+        p1Word = null;
+        p2Word = null;
+        startGame();
+    });
+
+    const clearGame = () => {
+        gameStarted = false;
+        p1Word = null;
+        p2Word = null;
+        p1 = null;
+        p2 = null;
+    }
+
+    const startGame = () => {
+        io.sockets.emit('jotto start', null);
+    }
 
     const getCorrect = (guess) => {
         let target = '';
@@ -157,10 +182,5 @@ io.on('connection', (socket) => {
         }
         return target === guess;
     }
-
-    const startGame = () => {
-        io.sockets.emit('jotto start', null);
-    }
-
 
 });

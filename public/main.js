@@ -18,6 +18,7 @@ $(function () {
     const $guesses2 = $('#guess2');           // Messages area
     const $word1 = $('#word1');           // Messages area
     const $word2 = $('#word2');           // Messages area
+    const $start = $('#startButton');           // Messages area
 
     const $loginPage = $('.login.page');        // The login page
     const $chatPage = $('.chat.page');          // The chatroom page
@@ -242,6 +243,7 @@ $(function () {
             prepend: true
         });
         addParticipantsMessage(data);
+        checkForRachel();
     });
 
     // Whenever the server emits 'new message', update the chat body
@@ -301,13 +303,21 @@ $(function () {
     socket.on('jotto win', (data) => {
         alert(`Congratulations ${data.winner}!`);
         if(data.winner === username){
-            $word1.html(`<h1>${data.winWord}</h1>`);
-            $word2.html(`<h1>${data.loseWord}</h1>`);
+            $word1.html(`${data.winWord}`);
+            $word2.html(`${data.loseWord}`);
         }else{
-            $word2.html(`<h1>${data.winWord}</h1>`);
-            $word1.html(`<h1>${data.loseWord}</h1>`);
+            $word2.html(`${data.winWord}`);
+            $word1.html(`${data.loseWord}`);
         }
+        
     });
+
+    const clearGame = () => {
+        $word1.html('?????');
+        $word2.html('?????');
+        $guesses1.html('');
+        $guesses2.html('');
+    }
 
     // Sends a chat message
     const sendGuess = () => {
@@ -339,6 +349,16 @@ $(function () {
             isValid = false;
         }
         return isValid;
+    }
+
+    const checkForRachel = () => {
+        if(username === 'rachel'){
+            $start.css({'display': 'block'});
+            $start.on('click', function() {
+                clearGame();
+                socket.emit('jotto start', null);
+            });
+        }
     }
 
 });
